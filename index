@@ -1,0 +1,34 @@
+const express = require('express');
+const app = express();
+
+app.use(express.json());
+
+// Banco de dados simplificado
+const receitas = [
+    {
+        nome: 'Mojito',
+        ingredientes: ['rum', 'hortelã', 'açúcar', 'limão', 'água com gás']
+    },
+    {
+        nome: 'Caipirinha',
+        ingredientes: ['cachaça', 'açúcar', 'limão']
+    },
+];
+
+app.post('/sugerir-coqueteis', (req, res) => {
+    const ingredientesCliente = req.body.ingredientes;
+    if (!ingredientesCliente || ingredientesCliente.length === 0) {
+        return res.status(400).json({ mensagem: 'Nenhum ingrediente fornecido.' });
+    }
+
+    const sugestoes = receitas.filter(receita => 
+        receita.ingredientes.every(ingrediente => ingredientesCliente.includes(ingrediente))
+    );
+
+    return res.json({ sugestoes });
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Servidor rodando na porta ${PORT}`);
+});
